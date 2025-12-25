@@ -20,6 +20,12 @@ npm start
 
 # Type checking without emitting files
 npm run typecheck
+
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
 ```
 
 ## Authentication
@@ -290,3 +296,51 @@ To use this MCP server with Claude Desktop:
    ```
 2. Restart Claude Desktop
 3. The Cal.com tools will be available in your conversations
+
+## Contributing
+
+### Creating a Pull Request
+
+1. Create a feature branch from `main`:
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+
+2. Make your changes and ensure tests pass:
+   ```bash
+   npm run typecheck
+   npm test
+   ```
+
+3. Commit with a descriptive message:
+   ```bash
+   git add .
+   git commit -m "feat: Add your feature description"
+   ```
+
+4. Push and create PR:
+   ```bash
+   git push -u origin feat/your-feature-name
+   gh pr create --title "feat: Your feature" --body "Description of changes"
+   ```
+
+### Commit Message Format
+
+Follow conventional commits:
+- `feat:` - New features
+- `fix:` - Bug fixes
+- `docs:` - Documentation changes
+- `refactor:` - Code refactoring
+- `test:` - Adding or updating tests
+
+### Testing
+
+All new features should include tests. Tests are located in `src/__tests__/` and use Vitest.
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode during development
+npm run test:watch
+```
