@@ -143,4 +143,4 @@ src/
 
 ---
 
-**MIT License** | Built by [Naga Karumuri](https://github.com/nagakarumuri)
+**MIT License** | Built by [Naga Karumuri](https://github.com/naga-k)

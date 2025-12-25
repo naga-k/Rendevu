@@ -15,10 +15,7 @@ npm install
 # Development with hot reload
 npm run dev
 
-# Build TypeScript to JavaScript
-npm run build
-
-# Run production build
+# Run server (uses tsx for TypeScript execution)
 npm start
 
 # Type checking without emitting files
@@ -181,7 +178,7 @@ All type definitions are in `src/types/`:
 - **TypeScript Configuration**:
   - Uses ES modules (`"type": "module"` in package.json)
   - `NodeNext` module resolution
-  - Outputs to `dist/` directory with source maps and declarations
+  - Runs directly via `tsx` (no build step required)
 
 ## Adding New Features
 
@@ -213,14 +210,13 @@ All type definitions are in `src/types/`:
 
 To use this MCP server with Claude Desktop:
 
-1. Build the project: `npm run build`
-2. Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+1. Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
    ```json
    {
      "mcpServers": {
        "rendevu": {
-         "command": "node",
-         "args": ["/path/to/Rendevu/dist/index.js"],
+         "command": "npx",
+         "args": ["tsx", "/path/to/Rendevu/src/index.ts"],
          "env": {
            "CALCOM_API_KEY": "cal_your-api-key"
          }
@@ -228,5 +224,5 @@ To use this MCP server with Claude Desktop:
      }
    }
    ```
-3. Restart Claude Desktop
-4. The Cal.com tools will be available in your conversations
+2. Restart Claude Desktop
+3. The Cal.com tools will be available in your conversations

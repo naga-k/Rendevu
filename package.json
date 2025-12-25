@@ -4,9 +4,6 @@
   "description": "Cal.com MCP server for managing availability through Claude",
   "type": "module",
   "main": "src/index.ts",
-  "bin": {
-    "rendevu": "./src/index.ts"
-  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",

@@ -74,6 +74,17 @@ export class CalcomClient {
         };
       }
 
+      // Validate response structure
+      if (typeof data !== 'object' || data === null || !('status' in data)) {
+        return {
+          status: 'error',
+          error: {
+            message: 'Invalid response structure from API',
+            code: 'INVALID_RESPONSE',
+          },
+        };
+      }
+
       return data as CalcomAPIResponse<T>;
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
