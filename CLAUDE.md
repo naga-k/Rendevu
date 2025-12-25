@@ -276,26 +276,55 @@ For example, to add a new "Webhooks" resource:
 
 4. Add the tools to the tools array and switch statement
 
-## Claude Desktop Integration
+## Integration
 
-To use this MCP server with Claude Desktop:
+### Claude Code (CLI)
 
-1. Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
-   ```json
-   {
-     "mcpServers": {
-       "rendevu": {
-         "command": "npx",
-         "args": ["tsx", "/path/to/Rendevu/src/index.ts"],
-         "env": {
-           "CALCOM_API_KEY": "cal_your-api-key"
-         }
-       }
-     }
-   }
-   ```
-2. Restart Claude Desktop
-3. The Cal.com tools will be available in your conversations
+Create a `.mcp.json` file in your project root:
+```json
+{
+  "mcpServers": {
+    "rendevu": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "/path/to/Rendevu/src/index.ts"],
+      "env": {
+        "CALCOM_API_KEY": "cal_your-api-key"
+      }
+    }
+  }
+}
+```
+
+Add `.mcp.json` to `.gitignore` (contains your API key). Start Claude Code - the tools are available automatically.
+
+### Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+```json
+{
+  "mcpServers": {
+    "rendevu": {
+      "command": "npx",
+      "args": ["tsx", "/path/to/Rendevu/src/index.ts"],
+      "env": {
+        "CALCOM_API_KEY": "cal_your-api-key"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop to load the tools.
+
+### Example Usage
+
+Once configured, you can ask Claude to:
+- "List my schedules" / "Update my availability"
+- "Show my event types" / "Create a 30-minute meeting type"
+- "List my upcoming bookings" / "Cancel booking xyz"
+- "Check available slots for next week"
+- "Update my profile timezone"
 
 ## Contributing
 
