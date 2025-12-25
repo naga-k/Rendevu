@@ -15,6 +15,10 @@ import { appConfig } from './config.js';
 import { CalcomClient } from './calcom-client.js';
 import { scheduleTools, ScheduleToolHandlers } from './tools/schedules.js';
 import { oauthClientTools, OAuthClientToolHandlers } from './tools/oauth-clients.js';
+import { eventTypeTools, EventTypeToolHandlers } from './tools/event-types.js';
+import { bookingTools, BookingToolHandlers } from './tools/bookings.js';
+import { slotTools, SlotToolHandlers } from './tools/slots.js';
+import { profileTools, ProfileToolHandlers } from './tools/profile.js';
 
 // Initialize Cal.com client
 const calcomClient = new CalcomClient(
@@ -26,6 +30,10 @@ const calcomClient = new CalcomClient(
 // Initialize tool handlers
 const scheduleHandlers = new ScheduleToolHandlers(calcomClient);
 const oauthClientHandlers = new OAuthClientToolHandlers(calcomClient);
+const eventTypeHandlers = new EventTypeToolHandlers(calcomClient);
+const bookingHandlers = new BookingToolHandlers(calcomClient);
+const slotHandlers = new SlotToolHandlers(calcomClient);
+const profileHandlers = new ProfileToolHandlers(calcomClient);
 
 // Create MCP server
 function createServer() {
@@ -44,7 +52,14 @@ function createServer() {
   // Register tool list handler
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      tools: [...scheduleTools, ...oauthClientTools],
+      tools: [
+        ...scheduleTools,
+        ...oauthClientTools,
+        ...eventTypeTools,
+        ...bookingTools,
+        ...slotTools,
+        ...profileTools,
+      ],
     };
   });
 
@@ -74,6 +89,34 @@ function createServer() {
           return await oauthClientHandlers.updateOAuthClient(args);
         case 'delete_oauth_client':
           return await oauthClientHandlers.deleteOAuthClient(args);
+        // Event Type tools
+        case 'list_event_types':
+          return await eventTypeHandlers.listEventTypes(args);
+        case 'get_event_type':
+          return await eventTypeHandlers.getEventType(args);
+        case 'create_event_type':
+          return await eventTypeHandlers.createEventType(args);
+        case 'update_event_type':
+          return await eventTypeHandlers.updateEventType(args);
+        case 'delete_event_type':
+          return await eventTypeHandlers.deleteEventType(args);
+        // Booking tools
+        case 'list_bookings':
+          return await bookingHandlers.listBookings(args);
+        case 'get_booking':
+          return await bookingHandlers.getBooking(args);
+        case 'cancel_booking':
+          return await bookingHandlers.cancelBooking(args);
+        case 'reschedule_booking':
+          return await bookingHandlers.rescheduleBooking(args);
+        // Slot tools
+        case 'get_available_slots':
+          return await slotHandlers.getAvailableSlots(args);
+        // Profile tools
+        case 'get_profile':
+          return await profileHandlers.getProfile(args);
+        case 'update_profile':
+          return await profileHandlers.updateProfile(args);
         default:
           throw new Error(`Unknown tool: ${name}`);
       }

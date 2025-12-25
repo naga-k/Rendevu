@@ -12,6 +12,16 @@ import type {
   CreateOAuthClientRequest,
   CreateOAuthClientResponse,
   UpdateOAuthClientRequest,
+  EventType,
+  CreateEventTypeRequest,
+  UpdateEventTypeRequest,
+  Booking,
+  CreateBookingRequest,
+  RescheduleBookingRequest,
+  CancelBookingRequest,
+  Slot,
+  UserProfile,
+  UpdateUserProfileRequest,
 } from './types/calcom.js';
 
 export class CalcomClient {
@@ -186,5 +196,136 @@ export class CalcomClient {
    */
   async deleteOAuthClient(clientId: string): Promise<CalcomAPIResponse<{ message: string }>> {
     return this.request<{ message: string }>('DELETE', `/oauth-clients/${clientId}`);
+  }
+
+  // Event Type Methods
+
+  /**
+   * Get all event types for the authenticated user
+   */
+  async listEventTypes(): Promise<CalcomAPIResponse<EventType[]>> {
+    return this.request<EventType[]>('GET', '/event-types');
+  }
+
+  /**
+   * Get a specific event type by ID
+   */
+  async getEventType(eventTypeId: number): Promise<CalcomAPIResponse<EventType>> {
+    return this.request<EventType>('GET', `/event-types/${eventTypeId}`);
+  }
+
+  /**
+   * Create a new event type
+   */
+  async createEventType(data: CreateEventTypeRequest): Promise<CalcomAPIResponse<EventType>> {
+    return this.request<EventType>('POST', '/event-types', data);
+  }
+
+  /**
+   * Update an existing event type
+   */
+  async updateEventType(
+    eventTypeId: number,
+    data: UpdateEventTypeRequest
+  ): Promise<CalcomAPIResponse<EventType>> {
+    return this.request<EventType>('PATCH', `/event-types/${eventTypeId}`, data);
+  }
+
+  /**
+   * Delete an event type
+   */
+  async deleteEventType(eventTypeId: number): Promise<CalcomAPIResponse<{ message: string }>> {
+    return this.request<{ message: string }>('DELETE', `/event-types/${eventTypeId}`);
+  }
+
+  // Booking Methods
+
+  /**
+   * Get all bookings with optional filters
+   */
+  async listBookings(filters?: {
+    status?: string;
+    eventTypeId?: number;
+    attendeeEmail?: string;
+  }): Promise<CalcomAPIResponse<Booking[]>> {
+    const params = new URLSearchParams();
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.eventTypeId) params.append('eventTypeId', String(filters.eventTypeId));
+    if (filters?.attendeeEmail) params.append('attendeeEmail', filters.attendeeEmail);
+    const query = params.toString();
+    return this.request<Booking[]>('GET', `/bookings${query ? `?${query}` : ''}`);
+  }
+
+  /**
+   * Get a specific booking by UID
+   */
+  async getBooking(bookingUid: string): Promise<CalcomAPIResponse<Booking>> {
+    return this.request<Booking>('GET', `/bookings/${bookingUid}`);
+  }
+
+  /**
+   * Create a new booking
+   */
+  async createBooking(data: CreateBookingRequest): Promise<CalcomAPIResponse<Booking>> {
+    return this.request<Booking>('POST', '/bookings', data);
+  }
+
+  /**
+   * Reschedule a booking
+   */
+  async rescheduleBooking(
+    bookingUid: string,
+    data: RescheduleBookingRequest
+  ): Promise<CalcomAPIResponse<Booking>> {
+    return this.request<Booking>('POST', `/bookings/${bookingUid}/reschedule`, data);
+  }
+
+  /**
+   * Cancel a booking
+   */
+  async cancelBooking(
+    bookingUid: string,
+    data?: CancelBookingRequest
+  ): Promise<CalcomAPIResponse<Booking>> {
+    return this.request<Booking>('POST', `/bookings/${bookingUid}/cancel`, data);
+  }
+
+  // Slots / Availability Methods
+
+  /**
+   * Get available slots for an event type
+   */
+  async getAvailableSlots(params: {
+    eventTypeId?: number;
+    eventTypeSlug?: string;
+    username?: string;
+    startTime: string;
+    endTime: string;
+    timeZone?: string;
+  }): Promise<CalcomAPIResponse<{ slots: Record<string, Slot[]> }>> {
+    const searchParams = new URLSearchParams();
+    if (params.eventTypeId) searchParams.append('eventTypeId', String(params.eventTypeId));
+    if (params.eventTypeSlug) searchParams.append('eventTypeSlug', params.eventTypeSlug);
+    if (params.username) searchParams.append('username', params.username);
+    searchParams.append('startTime', params.startTime);
+    searchParams.append('endTime', params.endTime);
+    if (params.timeZone) searchParams.append('timeZone', params.timeZone);
+    return this.request<{ slots: Record<string, Slot[]> }>('GET', `/slots?${searchParams.toString()}`);
+  }
+
+  // User Profile Methods
+
+  /**
+   * Get the authenticated user's profile
+   */
+  async getMe(): Promise<CalcomAPIResponse<UserProfile>> {
+    return this.request<UserProfile>('GET', '/me');
+  }
+
+  /**
+   * Update the authenticated user's profile
+   */
+  async updateMe(data: UpdateUserProfileRequest): Promise<CalcomAPIResponse<UserProfile>> {
+    return this.request<UserProfile>('PATCH', '/me', data);
   }
 }

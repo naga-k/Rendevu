@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Rendevu is a Model Context Protocol (MCP) server that provides Cal.com management tools directly in Claude chat. It allows you to manage schedules, availability, and OAuth clients on Cal.com through natural conversation with Claude.
+Rendevu is a Model Context Protocol (MCP) server that provides Cal.com management tools directly in Claude chat. It allows you to manage schedules, event types, bookings, availability slots, user profiles, and OAuth clients on Cal.com through natural conversation with Claude.
 
 ## Development Commands
 
@@ -54,8 +54,12 @@ The codebase uses the Model Context Protocol to expose Cal.com functionality as 
    - Provides methods for schedules and OAuth client operations
 
 3. **Tool Handlers** (`src/tools/`):
-   - `schedules.ts`: 5 MCP tools for schedule management
-   - `oauth-clients.ts`: 5 MCP tools for OAuth client management
+   - `schedules.ts`: 5 tools for schedule management
+   - `oauth-clients.ts`: 5 tools for OAuth client management
+   - `event-types.ts`: 5 tools for event type management
+   - `bookings.ts`: 4 tools for booking management
+   - `slots.ts`: 1 tool for availability slot queries
+   - `profile.ts`: 2 tools for user profile management
    - Validates input using Zod schemas
    - Formats responses for Claude
 
@@ -112,6 +116,62 @@ These tools manage OAuth applications on Cal.com. Use them to create apps that a
     - Returns: Success confirmation
     - Warning: Invalidates all tokens issued to this client
 
+#### Event Type Tools
+
+11. **`list_event_types`**: Get all event types for the authenticated user
+    - No parameters required
+    - Returns: Array of event types with IDs, titles, slugs, durations, and settings
+
+12. **`get_event_type`**: Get detailed information about a specific event type
+    - Parameters: `eventTypeId` (number)
+    - Returns: Full event type details including locations, buffers, and scheduling settings
+
+13. **`create_event_type`**: Create a new event type
+    - Parameters: `title`, `slug`, `lengthInMinutes` (required), plus optional `description`, `locations`, `scheduleId`, `hidden`, `requiresConfirmation`, `disableGuests`, `minimumBookingNotice`, `beforeEventBuffer`, `afterEventBuffer`, `slotInterval`
+    - Returns: Created event type details
+
+14. **`update_event_type`**: Update an existing event type
+    - Parameters: `eventTypeId` (required), plus any fields to update
+    - Returns: Updated event type details
+
+15. **`delete_event_type`**: Delete an event type
+    - Parameters: `eventTypeId` (number)
+    - Returns: Success confirmation
+
+#### Booking Tools
+
+16. **`list_bookings`**: Get all bookings
+    - Parameters: Optional `status` (upcoming, past, cancelled, unconfirmed), `eventTypeId`, `attendeeEmail`
+    - Returns: Array of bookings
+
+17. **`get_booking`**: Get detailed information about a specific booking
+    - Parameters: `bookingUid` (string)
+    - Returns: Full booking details
+
+18. **`cancel_booking`**: Cancel a booking
+    - Parameters: `bookingUid` (required), optional `cancellationReason`
+    - Returns: Success confirmation
+
+19. **`reschedule_booking`**: Reschedule a booking to a new time
+    - Parameters: `bookingUid`, `start` (ISO 8601 format) (required), optional `reschedulingReason`
+    - Returns: Updated booking details
+
+#### Availability Slot Tools
+
+20. **`get_available_slots`**: Get available time slots for booking
+    - Parameters: `startTime`, `endTime` (required, ISO 8601 format), optional `eventTypeId`, `eventTypeSlug`, `username`, `timeZone`
+    - Returns: Available slots grouped by date
+
+#### User Profile Tools
+
+21. **`get_profile`**: Get the authenticated user's Cal.com profile
+    - No parameters required
+    - Returns: Username, name, email, timezone, and other settings
+
+22. **`update_profile`**: Update the authenticated user's profile
+    - Parameters: Optional `name`, `bio`, `timeZone`, `weekStart`, `timeFormat`, `defaultScheduleId`
+    - Returns: Updated profile details
+
 ### Data Types
 
 #### Availability Block
@@ -166,7 +226,7 @@ type OAuthPermission =
 ### Type System
 
 All type definitions are in `src/types/`:
-- `calcom.ts`: Cal.com API types (schedules, OAuth clients, availability, overrides, API responses)
+- `calcom.ts`: Cal.com API types (schedules, OAuth clients, event types, bookings, slots, user profile, availability, overrides, API responses)
 - `index.ts`: Re-exports all types
 
 ### Key Implementation Details
@@ -191,20 +251,24 @@ All type definitions are in `src/types/`:
    - Add case in tool handler switch statement
 4. Update TypeScript types in `src/types/calcom.ts` if needed
 
-### Example: Adding Event Type Management
+### Example: Adding a New Resource
+
+For example, to add a new "Webhooks" resource:
 
 1. Add methods to `CalcomClient`:
    ```typescript
-   async listEventTypes() { ... }
-   async createEventType(data) { ... }
+   async listWebhooks() { ... }
+   async createWebhook(data) { ... }
    ```
 
-2. Create `src/tools/event-types.ts` with tool definitions and handlers
+2. Create `src/tools/webhooks.ts` with tool definitions and handlers
 
 3. Register in `src/index.ts`:
    ```typescript
-   import { eventTypeTools, EventTypeToolHandlers } from './tools/event-types.js';
+   import { webhookTools, WebhookToolHandlers } from './tools/webhooks.js';
    ```
+
+4. Add the tools to the tools array and switch statement
 
 ## Claude Desktop Integration
 
