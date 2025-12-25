@@ -21,11 +21,21 @@ describe('EventTypeToolHandlers', () => {
     handlers = new EventTypeToolHandlers(mockClient as CalcomClient);
   });
 
+  const baseEventType = {
+    ownerId: 1,
+    hidden: false,
+    requiresConfirmation: false,
+    disableGuests: false,
+    minimumBookingNotice: 120,
+    beforeEventBuffer: 0,
+    afterEventBuffer: 0,
+  };
+
   describe('listEventTypes', () => {
     it('should return event types on success', async () => {
       const eventTypes = [
-        { id: 1, title: '30 Min Meeting', slug: '30min', lengthInMinutes: 30 },
-        { id: 2, title: '1 Hour Meeting', slug: '1hr', lengthInMinutes: 60 },
+        { id: 1, title: '30 Min Meeting', slug: '30min', lengthInMinutes: 30, ...baseEventType },
+        { id: 2, title: '1 Hour Meeting', slug: '1hr', lengthInMinutes: 60, ...baseEventType },
       ];
       vi.mocked(mockClient.listEventTypes!).mockResolvedValue({
         status: 'success',
@@ -59,6 +69,7 @@ describe('EventTypeToolHandlers', () => {
         slug: '30min',
         lengthInMinutes: 30,
         description: 'A quick meeting',
+        ...baseEventType,
       };
       vi.mocked(mockClient.getEventType!).mockResolvedValue({
         status: 'success',
@@ -87,6 +98,7 @@ describe('EventTypeToolHandlers', () => {
         title: 'New Meeting',
         slug: 'new-meeting',
         lengthInMinutes: 45,
+        ...baseEventType,
       };
       vi.mocked(mockClient.createEventType!).mockResolvedValue({
         status: 'success',
@@ -115,7 +127,7 @@ describe('EventTypeToolHandlers', () => {
     it('should accept optional fields', async () => {
       vi.mocked(mockClient.createEventType!).mockResolvedValue({
         status: 'success',
-        data: { id: 4, title: 'Full Meeting', slug: 'full', lengthInMinutes: 60 },
+        data: { id: 4, title: 'Full Meeting', slug: 'full', lengthInMinutes: 60, ...baseEventType },
       });
 
       await handlers.createEventType({
@@ -143,7 +155,7 @@ describe('EventTypeToolHandlers', () => {
     it('should update event type', async () => {
       vi.mocked(mockClient.updateEventType!).mockResolvedValue({
         status: 'success',
-        data: { id: 1, title: 'Updated Meeting', slug: '30min', lengthInMinutes: 30 },
+        data: { id: 1, title: 'Updated Meeting', slug: '30min', lengthInMinutes: 30, ...baseEventType },
       });
 
       const result = await handlers.updateEventType({

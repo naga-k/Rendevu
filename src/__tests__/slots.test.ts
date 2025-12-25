@@ -36,8 +36,8 @@ describe('SlotToolHandlers', () => {
       });
 
       const result = await handlers.getAvailableSlots({
-        startTime: '2025-01-15T00:00:00Z',
-        endTime: '2025-01-17T00:00:00Z',
+        start: '2025-01-15',
+        end: '2025-01-17',
       });
 
       expect(result.content[0].text).toContain('2025-01-15');
@@ -51,15 +51,15 @@ describe('SlotToolHandlers', () => {
       });
 
       await handlers.getAvailableSlots({
-        startTime: '2025-01-15T00:00:00Z',
-        endTime: '2025-01-17T00:00:00Z',
+        start: '2025-01-15',
+        end: '2025-01-17',
         eventTypeId: 1,
         timeZone: 'America/New_York',
       });
 
       expect(mockClient.getAvailableSlots).toHaveBeenCalledWith({
-        startTime: '2025-01-15T00:00:00Z',
-        endTime: '2025-01-17T00:00:00Z',
+        start: '2025-01-15',
+        end: '2025-01-17',
         eventTypeId: 1,
         timeZone: 'America/New_York',
       });
@@ -72,8 +72,8 @@ describe('SlotToolHandlers', () => {
       });
 
       await handlers.getAvailableSlots({
-        startTime: '2025-01-15T00:00:00Z',
-        endTime: '2025-01-17T00:00:00Z',
+        start: '2025-01-15',
+        end: '2025-01-17',
         eventTypeSlug: '30min',
         username: 'johndoe',
       });
@@ -89,7 +89,7 @@ describe('SlotToolHandlers', () => {
     it('should validate required fields', async () => {
       await expect(handlers.getAvailableSlots({})).rejects.toThrow();
       await expect(
-        handlers.getAvailableSlots({ startTime: '2025-01-15T00:00:00Z' })
+        handlers.getAvailableSlots({ start: '2025-01-15' })
       ).rejects.toThrow();
     });
 
@@ -100,8 +100,8 @@ describe('SlotToolHandlers', () => {
       });
 
       const result = await handlers.getAvailableSlots({
-        startTime: '2025-01-15T00:00:00Z',
-        endTime: '2025-01-17T00:00:00Z',
+        start: '2025-01-15',
+        end: '2025-01-17',
         eventTypeId: 999,
       });
 

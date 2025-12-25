@@ -10,6 +10,15 @@ describe('ProfileToolHandlers', () => {
   let mockClient: Partial<CalcomClient>;
   let handlers: ProfileToolHandlers;
 
+  const baseProfile = {
+    id: 1,
+    username: 'johndoe',
+    name: 'John Doe',
+    email: 'john@example.com',
+    timeZone: 'America/New_York',
+    weekStart: 'Monday',
+  };
+
   beforeEach(() => {
     mockClient = {
       getMe: vi.fn(),
@@ -21,12 +30,7 @@ describe('ProfileToolHandlers', () => {
   describe('getProfile', () => {
     it('should return user profile', async () => {
       const profile = {
-        id: 1,
-        username: 'johndoe',
-        name: 'John Doe',
-        email: 'john@example.com',
-        timeZone: 'America/New_York',
-        weekStart: 'Monday',
+        ...baseProfile,
         timeFormat: 12,
       };
       vi.mocked(mockClient.getMe!).mockResolvedValue({
@@ -59,10 +63,8 @@ describe('ProfileToolHandlers', () => {
       vi.mocked(mockClient.updateMe!).mockResolvedValue({
         status: 'success',
         data: {
-          id: 1,
-          username: 'johndoe',
+          ...baseProfile,
           name: 'John Updated',
-          email: 'john@example.com',
         },
       });
 
@@ -76,7 +78,7 @@ describe('ProfileToolHandlers', () => {
       vi.mocked(mockClient.updateMe!).mockResolvedValue({
         status: 'success',
         data: {
-          id: 1,
+          ...baseProfile,
           timeZone: 'Europe/London',
         },
       });
@@ -90,7 +92,7 @@ describe('ProfileToolHandlers', () => {
       vi.mocked(mockClient.updateMe!).mockResolvedValue({
         status: 'success',
         data: {
-          id: 1,
+          ...baseProfile,
           name: 'New Name',
           bio: 'New bio text',
           timeZone: 'Asia/Tokyo',
@@ -122,7 +124,7 @@ describe('ProfileToolHandlers', () => {
     it('should allow empty update (no changes)', async () => {
       vi.mocked(mockClient.updateMe!).mockResolvedValue({
         status: 'success',
-        data: { id: 1, name: 'John' },
+        data: { ...baseProfile },
       });
 
       const result = await handlers.updateProfile({});
