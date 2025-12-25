@@ -299,16 +299,16 @@ export class CalcomClient {
     eventTypeId?: number;
     eventTypeSlug?: string;
     username?: string;
-    startTime: string;
-    endTime: string;
+    start: string;
+    end: string;
     timeZone?: string;
   }): Promise<CalcomAPIResponse<{ slots: Record<string, Slot[]> }>> {
     const searchParams = new URLSearchParams();
     if (params.eventTypeId) searchParams.append('eventTypeId', String(params.eventTypeId));
     if (params.eventTypeSlug) searchParams.append('eventTypeSlug', params.eventTypeSlug);
     if (params.username) searchParams.append('username', params.username);
-    searchParams.append('startTime', params.startTime);
-    searchParams.append('endTime', params.endTime);
+    searchParams.append('start', params.start);
+    searchParams.append('end', params.end);
     if (params.timeZone) searchParams.append('timeZone', params.timeZone);
     return this.request<{ slots: Record<string, Slot[]> }>('GET', `/slots?${searchParams.toString()}`);
   }

@@ -23,8 +23,8 @@ describe('BookingToolHandlers', () => {
   describe('listBookings', () => {
     it('should return bookings without filters', async () => {
       const bookings = [
-        { uid: 'abc123', title: 'Meeting 1', status: 'ACCEPTED' },
-        { uid: 'def456', title: 'Meeting 2', status: 'PENDING' },
+        { id: 1, uid: 'abc123', title: 'Meeting 1', status: 'upcoming' as const, startTime: '2025-01-15T10:00:00Z', endTime: '2025-01-15T10:30:00Z', attendees: [], eventTypeId: 1 },
+        { id: 2, uid: 'def456', title: 'Meeting 2', status: 'upcoming' as const, startTime: '2025-01-16T10:00:00Z', endTime: '2025-01-16T10:30:00Z', attendees: [], eventTypeId: 1 },
       ];
       vi.mocked(mockClient.listBookings!).mockResolvedValue({
         status: 'success',
@@ -73,11 +73,14 @@ describe('BookingToolHandlers', () => {
   describe('getBooking', () => {
     it('should return booking details', async () => {
       const booking = {
+        id: 1,
         uid: 'abc123',
         title: '30 Min Meeting',
-        status: 'ACCEPTED',
+        status: 'upcoming' as const,
         startTime: '2025-01-15T10:00:00Z',
         endTime: '2025-01-15T10:30:00Z',
+        attendees: [],
+        eventTypeId: 1,
       };
       vi.mocked(mockClient.getBooking!).mockResolvedValue({
         status: 'success',
@@ -103,7 +106,7 @@ describe('BookingToolHandlers', () => {
     it('should cancel booking without reason', async () => {
       vi.mocked(mockClient.cancelBooking!).mockResolvedValue({
         status: 'success',
-        data: { uid: 'abc123', status: 'CANCELLED' },
+        data: { id: 1, uid: 'abc123', title: 'Meeting', status: 'cancelled' as const, startTime: '2025-01-15T10:00:00Z', endTime: '2025-01-15T10:30:00Z', attendees: [], eventTypeId: 1 },
       });
 
       const result = await handlers.cancelBooking({ bookingUid: 'abc123' });
@@ -117,7 +120,7 @@ describe('BookingToolHandlers', () => {
     it('should cancel booking with reason', async () => {
       vi.mocked(mockClient.cancelBooking!).mockResolvedValue({
         status: 'success',
-        data: { uid: 'abc123', status: 'CANCELLED' },
+        data: { id: 1, uid: 'abc123', title: 'Meeting', status: 'cancelled' as const, startTime: '2025-01-15T10:00:00Z', endTime: '2025-01-15T10:30:00Z', attendees: [], eventTypeId: 1 },
       });
 
       await handlers.cancelBooking({
@@ -148,9 +151,14 @@ describe('BookingToolHandlers', () => {
       vi.mocked(mockClient.rescheduleBooking!).mockResolvedValue({
         status: 'success',
         data: {
+          id: 1,
           uid: 'abc123-new',
+          title: 'Meeting',
           startTime: '2025-01-20T14:00:00Z',
-          status: 'PENDING',
+          endTime: '2025-01-20T14:30:00Z',
+          status: 'upcoming' as const,
+          attendees: [],
+          eventTypeId: 1,
         },
       });
 
@@ -169,7 +177,7 @@ describe('BookingToolHandlers', () => {
     it('should include rescheduling reason', async () => {
       vi.mocked(mockClient.rescheduleBooking!).mockResolvedValue({
         status: 'success',
-        data: { uid: 'abc123-new', status: 'PENDING' },
+        data: { id: 1, uid: 'abc123-new', title: 'Meeting', status: 'upcoming' as const, startTime: '2025-01-20T14:00:00Z', endTime: '2025-01-20T14:30:00Z', attendees: [], eventTypeId: 1 },
       });
 
       await handlers.rescheduleBooking({

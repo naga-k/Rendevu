@@ -9,8 +9,8 @@ const GetAvailableSlotsSchema = z.object({
   eventTypeId: z.number().int().positive().optional(),
   eventTypeSlug: z.string().optional(),
   username: z.string().optional(),
-  startTime: z.string().min(1),
-  endTime: z.string().min(1),
+  start: z.string().min(1),
+  end: z.string().min(1),
   timeZone: z.string().optional(),
 });
 
@@ -24,11 +24,11 @@ export const slotTools = [
         eventTypeId: { type: 'number', description: 'Event type ID to check availability for' },
         eventTypeSlug: { type: 'string', description: 'Event type slug (requires username)' },
         username: { type: 'string', description: 'Username (required if using eventTypeSlug)' },
-        startTime: { type: 'string', description: 'Start of date range in ISO 8601 format' },
-        endTime: { type: 'string', description: 'End of date range in ISO 8601 format' },
+        start: { type: 'string', description: 'Start date in YYYY-MM-DD format' },
+        end: { type: 'string', description: 'End date in YYYY-MM-DD format' },
         timeZone: { type: 'string', description: 'Timezone for slots (e.g., America/New_York)' },
       },
-      required: ['startTime', 'endTime'],
+      required: ['start', 'end'],
     },
   },
 ];
