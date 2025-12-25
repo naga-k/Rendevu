@@ -1,0 +1,19 @@
+startCommand:
+  type: "stdio"
+  configSchema:
+    type: "object"
+    required:
+      - "calcomApiKey"
+    properties:
+      calcomApiKey:
+        type: "string"
+        title: "Cal.com API Key"
+        description: "Your Cal.com API key (get it from https://app.cal.com/settings/developer/api-keys)"
+  exampleConfig:
+    calcomApiKey: "cal_live_xxxxxxxxxxxx"
+  command: "npx"
+  args:
+    - "tsx"
+    - "src/index.ts"
+  env:
+    CALCOM_API_KEY: "{{calcomApiKey}}"
