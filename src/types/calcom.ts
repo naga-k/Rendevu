@@ -1,49 +1,112 @@
-export interface CalcomWebhookPayload {
-  triggerEvent: CalcomEventType;
-  createdAt: string;
-  payload: BookingPayload;
+/**
+ * Cal.com API Types
+ * Based on Cal.com API v2 documentation
+ */
+
+export interface CalcomAPIResponse<T> {
+  status: 'success' | 'error';
+  data?: T;
+  error?: {
+    message?: string;
+    code?: string;
+  };
 }
 
-export type CalcomEventType =
-  | "BOOKING_CREATED"
-  | "BOOKING_RESCHEDULED"
-  | "BOOKING_CANCELLED"
-  | "BOOKING_CONFIRMED"
-  | "BOOKING_REJECTED"
-  | "BOOKING_REQUESTED"
-  | "BOOKING_PAYMENT_INITIATED"
-  | "BOOKING_PAYMENT_COMPLETE"
-  | "MEETING_ENDED"
-  | "MEETING_STARTED"
-  | "RECORDING_READY";
+export interface AvailabilityBlock {
+  days: string[];
+  startTime: string; // HH:MM format (24-hour)
+  endTime: string;   // HH:MM format (24-hour)
+}
 
-export interface BookingPayload {
+export interface ScheduleOverride {
+  date: string;      // YYYY-MM-DD format
+  startTime: string; // HH:MM format (24-hour)
+  endTime: string;   // HH:MM format (24-hour)
+}
+
+export interface Schedule {
   id: number;
-  uid: string;
-  title: string;
-  description: string | null;
-  startTime: string;
-  endTime: string;
-  status: string;
-  location: string | null;
-  eventTypeId: number;
-  organizer: Attendee;
-  attendees: Attendee[];
-  metadata: Record<string, unknown>;
-  responses?: Record<string, string>;
-  additionalNotes?: string;
-}
-
-export interface Attendee {
-  id?: number;
-  email: string;
+  ownerId: number;
   name: string;
   timeZone: string;
-  language?: string;
+  availability: AvailabilityBlock[];
+  isDefault: boolean;
+  overrides?: ScheduleOverride[];
 }
 
-export interface MeetingRecording {
-  downloadUrl: string;
-  duration: number;
-  format: string;
+export interface CreateScheduleRequest {
+  name: string;
+  timeZone: string;
+  isDefault: boolean;
+  availability?: AvailabilityBlock[];
+  overrides?: ScheduleOverride[];
+}
+
+export interface UpdateScheduleRequest {
+  name?: string;
+  timeZone?: string;
+  isDefault?: boolean;
+  availability?: AvailabilityBlock[];
+  overrides?: ScheduleOverride[];
+}
+
+// OAuth Client Types
+export type OAuthPermission =
+  | 'EVENT_TYPE_READ'
+  | 'EVENT_TYPE_WRITE'
+  | 'BOOKING_READ'
+  | 'BOOKING_WRITE'
+  | 'SCHEDULE_READ'
+  | 'SCHEDULE_WRITE'
+  | 'APPS_READ'
+  | 'APPS_WRITE'
+  | 'PROFILE_READ'
+  | 'PROFILE_WRITE'
+  | '*';
+
+export interface OAuthClient {
+  id: string;
+  name: string;
+  secret: string;
+  permissions: OAuthPermission[];
+  redirectUris: string[];
+  organizationId: number;
+  createdAt: string;
+  areEmailsEnabled: boolean;
+  areDefaultEventTypesEnabled: boolean;
+  areCalendarEventsEnabled: boolean;
+  logo?: string;
+  bookingRedirectUri?: string;
+  bookingCancelRedirectUri?: string;
+  bookingRescheduleRedirectUri?: string;
+}
+
+export interface CreateOAuthClientRequest {
+  name: string;
+  redirectUris: string[];
+  permissions: OAuthPermission[];
+  logo?: string;
+  bookingRedirectUri?: string;
+  bookingCancelRedirectUri?: string;
+  bookingRescheduleRedirectUri?: string;
+  areEmailsEnabled?: boolean;
+  areDefaultEventTypesEnabled?: boolean;
+  areCalendarEventsEnabled?: boolean;
+}
+
+export interface UpdateOAuthClientRequest {
+  name?: string;
+  logo?: string;
+  redirectUris?: string[];
+  bookingRedirectUri?: string;
+  bookingCancelRedirectUri?: string;
+  bookingRescheduleRedirectUri?: string;
+  areEmailsEnabled?: boolean;
+  areDefaultEventTypesEnabled?: boolean;
+  areCalendarEventsEnabled?: boolean;
+}
+
+export interface CreateOAuthClientResponse {
+  clientId: string;
+  clientSecret: string;
 }
