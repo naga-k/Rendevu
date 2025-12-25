@@ -38,16 +38,33 @@ export class CalcomClient {
     };
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+
       const response = await fetch(url, {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
       });
 
-      const data: unknown = await response.json();
+      clearTimeout(timeoutId);
+
+      let data: unknown;
+      try {
+        data = await response.json();
+      } catch {
+        return {
+          status: 'error',
+          error: {
+            message: 'Invalid JSON response from API',
+            code: 'PARSE_ERROR',
+          },
+        };
+      }
 
       if (!response.ok) {
-        const errorData = data as Record<string, unknown>;
+        const errorData = typeof data === 'object' && data !== null ? data as Record<string, unknown> : {};
         return {
           status: 'error',
           error: {
@@ -59,6 +76,15 @@ export class CalcomClient {
 
       return data as CalcomAPIResponse<T>;
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return {
+          status: 'error',
+          error: {
+            message: 'Request timeout',
+            code: 'TIMEOUT',
+          },
+        };
+      }
       return {
         status: 'error',
         error: {

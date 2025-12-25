@@ -35,7 +35,7 @@ npx @smithery/cli install rendevu --client claude
 
 1. **Clone & Install**
    ```bash
-   git clone https://github.com/nagakarumuri/rendevu.git
+   git clone https://github.com/naga-k/Rendevu.git
    cd rendevu
    npm install
    ```

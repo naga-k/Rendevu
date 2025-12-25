@@ -5,9 +5,14 @@
 import { z } from 'zod';
 import type { CalcomClient } from '../calcom-client.js';
 
+// Day of week enum for validation
+const DayOfWeekEnum = z.enum([
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+]);
+
 // Zod schemas for input validation
 const AvailabilityBlockSchema = z.object({
-  days: z.array(z.string()),
+  days: z.array(DayOfWeekEnum),
   startTime: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, 'Must be in HH:MM format'),
   endTime: z.string().regex(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, 'Must be in HH:MM format'),
 });
