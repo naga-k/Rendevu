@@ -38,12 +38,13 @@ export class CalcomClient {
   private async request<T>(
     method: string,
     endpoint: string,
-    body?: unknown
+    body?: unknown,
+    apiVersionOverride?: string
   ): Promise<CalcomAPIResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${this.apiKey}`,
-      'cal-api-version': this.apiVersion,
+      'cal-api-version': apiVersionOverride || this.apiVersion,
       'Content-Type': 'application/json',
     };
 
@@ -310,7 +311,8 @@ export class CalcomClient {
     searchParams.append('start', params.start);
     searchParams.append('end', params.end);
     if (params.timeZone) searchParams.append('timeZone', params.timeZone);
-    return this.request<{ slots: Record<string, Slot[]> }>('GET', `/slots?${searchParams.toString()}`);
+    // Slots endpoint requires API version 2024-09-04
+    return this.request<{ slots: Record<string, Slot[]> }>('GET', `/slots?${searchParams.toString()}`, undefined, '2024-09-04');
   }
 
   // User Profile Methods
