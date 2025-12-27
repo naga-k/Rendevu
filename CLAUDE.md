@@ -43,6 +43,21 @@ This MCP server uses **API key authentication** to connect to Cal.com's API v2.
 
 **Note:** The OAuth Client tools (list, create, update, delete OAuth clients) are for *managing OAuth applications on Cal.com* - they do NOT affect how this MCP server authenticates. This server always uses API key auth.
 
+## Cal.com API Versioning
+
+Cal.com API v2 requires a `cal-api-version` header for all requests. **Different endpoints may require different API versions.**
+
+| Endpoint | Required Version | Notes |
+|----------|-----------------|-------|
+| `/schedules` | `2024-06-11` | Default version |
+| `/event-types` | `2024-06-11` | Default version |
+| `/bookings` | `2024-06-11` | Default version |
+| `/me` (profile) | `2024-06-11` | Default version |
+| `/oauth-clients` | `2024-06-11` | Default version |
+| **`/slots`** | **`2024-09-04`** | ⚠️ Different version required |
+
+The `CalcomClient` handles this automatically by allowing per-request version overrides. When adding new endpoints, check the [Cal.com API docs](https://cal.com/docs/api-reference/v2) for the required version.
+
 ## Architecture
 
 ### MCP Server Architecture
@@ -241,6 +256,7 @@ All type definitions are in `src/types/`:
 - **Transport**: stdio transport for Claude Desktop integration
 - **Validation**: Zod schemas validate all tool inputs
 - **Error Handling**: All errors are caught and returned with descriptive messages
+- **API Versioning**: The `CalcomClient.request()` method accepts an optional `apiVersionOverride` parameter for endpoints requiring different versions (e.g., `/slots` requires `2024-09-04`)
 - **TypeScript Configuration**:
   - Uses ES modules (`"type": "module"` in package.json)
   - `NodeNext` module resolution
@@ -278,9 +294,36 @@ For example, to add a new "Webhooks" resource:
 
 ## Integration
 
+### Runtime Choice: Node.js vs Bun
+
+This MCP server works with both Node.js and Bun:
+
+- **Node.js (npx tsx)**: Standard approach, works everywhere
+- **Bun**: Faster startup, **required for Smithery** (MCP marketplace)
+
+Choose based on your needs. For Smithery distribution, use Bun.
+
 ### Claude Code (CLI)
 
 Create a `.mcp.json` file in your project root:
+
+**Option 1: Using Bun (recommended for Smithery)**
+```json
+{
+  "mcpServers": {
+    "rendevu": {
+      "type": "stdio",
+      "command": "bun",
+      "args": ["src/index.ts"],
+      "env": {
+        "CALCOM_API_KEY": "cal_your-api-key"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Using Node.js**
 ```json
 {
   "mcpServers": {
@@ -301,6 +344,23 @@ Add `.mcp.json` to `.gitignore` (contains your API key). Start Claude Code - the
 ### Claude Desktop
 
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+
+**Option 1: Using Bun (recommended for Smithery)**
+```json
+{
+  "mcpServers": {
+    "rendevu": {
+      "command": "bun",
+      "args": ["/path/to/Rendevu/src/index.ts"],
+      "env": {
+        "CALCOM_API_KEY": "cal_your-api-key"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Using Node.js**
 ```json
 {
   "mcpServers": {
