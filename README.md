@@ -23,16 +23,6 @@ No more switching between apps. Just chat with Claude.
 
 ## Quick Start
 
-### Option 1: Smithery (Recommended)
-
-Install directly from [Smithery](https://smithery.ai):
-
-```bash
-npx @smithery/cli install rendevu --client claude
-```
-
-### Option 2: Manual Installation
-
 1. **Clone & Install**
    ```bash
    git clone https://github.com/naga-k/Rendevu.git
@@ -78,6 +68,34 @@ npx @smithery/cli install rendevu --client claude
 | `update_schedule` | Modify availability, timezone, or name |
 | `delete_schedule` | Remove a schedule |
 
+### Event Types
+| Tool | Description |
+|------|-------------|
+| `list_event_types` | Get all your event types |
+| `get_event_type` | View event type details |
+| `create_event_type` | Create a new event type |
+| `update_event_type` | Modify title, duration, visibility |
+| `delete_event_type` | Remove an event type |
+
+### Bookings
+| Tool | Description |
+|------|-------------|
+| `list_bookings` | Get bookings (filter by status, event type) |
+| `get_booking` | View booking details |
+| `cancel_booking` | Cancel a booking |
+| `reschedule_booking` | Reschedule to a new time |
+
+### Availability
+| Tool | Description |
+|------|-------------|
+| `get_available_slots` | Check open time slots for booking |
+
+### Profile
+| Tool | Description |
+|------|-------------|
+| `get_profile` | View your Cal.com profile |
+| `update_profile` | Update name, bio, timezone |
+
 ### OAuth Client Management (Platform/Org Admins)
 | Tool | Description |
 |------|-------------|
@@ -117,8 +135,12 @@ src/
 ├── calcom-client.ts   # Cal.com API client
 ├── config.ts          # Environment config
 ├── tools/
-│   ├── schedules.ts   # Schedule tools
-│   └── oauth-clients.ts # OAuth tools
+│   ├── schedules.ts      # Schedule tools
+│   ├── event-types.ts    # Event type tools
+│   ├── bookings.ts       # Booking tools
+│   ├── slots.ts          # Availability slots
+│   ├── profile.ts        # User profile tools
+│   └── oauth-clients.ts  # OAuth tools
 └── types/
     └── calcom.ts      # Type definitions
 ```
@@ -139,7 +161,6 @@ src/
 
 - [Cal.com API Docs](https://cal.com/docs/api-reference/v2/introduction)
 - [MCP Protocol](https://modelcontextprotocol.io)
-- [Smithery](https://smithery.ai)
 
 ---
 
