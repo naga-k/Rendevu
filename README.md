@@ -39,6 +39,22 @@ No more switching between apps. Just chat with Claude.
    - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
    - **Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
 
+   **Using Bun** (recommended for Smithery):
+   ```json
+   {
+     "mcpServers": {
+       "rendevu": {
+         "command": "bun",
+         "args": ["/path/to/rendevu/src/index.ts"],
+         "env": {
+           "CALCOM_API_KEY": "cal_your-api-key"
+         }
+       }
+     }
+   }
+   ```
+
+   **Using Node.js**:
    ```json
    {
      "mcpServers": {

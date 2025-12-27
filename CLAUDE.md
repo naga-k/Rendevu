@@ -294,9 +294,36 @@ For example, to add a new "Webhooks" resource:
 
 ## Integration
 
+### Runtime Choice: Node.js vs Bun
+
+This MCP server works with both Node.js and Bun:
+
+- **Node.js (npx tsx)**: Standard approach, works everywhere
+- **Bun**: Faster startup, **required for Smithery** (MCP marketplace)
+
+Choose based on your needs. For Smithery distribution, use Bun.
+
 ### Claude Code (CLI)
 
 Create a `.mcp.json` file in your project root:
+
+**Option 1: Using Bun (recommended for Smithery)**
+```json
+{
+  "mcpServers": {
+    "rendevu": {
+      "type": "stdio",
+      "command": "bun",
+      "args": ["src/index.ts"],
+      "env": {
+        "CALCOM_API_KEY": "cal_your-api-key"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Using Node.js**
 ```json
 {
   "mcpServers": {
@@ -317,6 +344,23 @@ Add `.mcp.json` to `.gitignore` (contains your API key). Start Claude Code - the
 ### Claude Desktop
 
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
+
+**Option 1: Using Bun (recommended for Smithery)**
+```json
+{
+  "mcpServers": {
+    "rendevu": {
+      "command": "bun",
+      "args": ["/path/to/Rendevu/src/index.ts"],
+      "env": {
+        "CALCOM_API_KEY": "cal_your-api-key"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Using Node.js**
 ```json
 {
   "mcpServers": {
